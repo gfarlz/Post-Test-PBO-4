@@ -411,72 +411,99 @@ Secara keseluruhan, class DonasiService menjadi pusat pengelolaan data donasi. S
    Ini adalah output dari fitu baru yaitu untuk mencatat donasi yang berbentuk barang
 
 # Post-Test-PBO-4
-#### 1. Abstract Class Donasi (Abstraction)
-```bash
-public abstract class Donasi {
-    ...
-    public abstract String getDetail();
-}
-```
-Bagian ini mengubah Donasi menjadi abstract class dengan method abstrak getDetail(). 
-Artinya, setiap subclass (DonasiUang, DonasiBarang) wajib mengimplementasikan method ini sesuai kebutuhan masing-masing. Ini adalah contoh penerapan Abstraction.
-
-#### 2. Interface CetskInfo
+### 1. Interface CetakInfo.java
 ```bash
 public interface CetakInfo {
     void cetakRingkas();
 }
 ```
-Interface CetakInfo ditambahkan untuk memaksa class yang mengimplementasikannya memiliki method cetakRingkas().
-Dengan begini, setiap jenis donasi bisa menampilkan informasi ringkas selain detail lengkap. Ini bagian dari nilai tambah, yaitu kombinasi abstract class dan interface dalam satu program.
+Interface CetakInfo ditambahkan agar mendukung abstraction. Di sini hanya ada deklarasi method cetakDetail() tanpa isi, sehingga setiap class yang mengimplementasikan interface ini wajib membuat implementasinya sendiri. Dengan cara ini, setiap jenis donasi (uang atau barang) bisa memiliki cara menampilkan detail yang berbeda.
 
-#### 3. Overloading Constraction di DonasiUang
+
+### 2. Abstract Class Donasi.java (ditambahkan abstract + overloading method)
 ```bash
-// Constructor 1 (lengkap)
-public DonasiUang(int id, String namaDonatur, String penerima, double jumlahUang) {
-    super(id, namaDonatur, penerima);
-    this.jumlahUang = jumlahUang;
-}
+public abstract class Donasi implements CetakInfo {
+    protected int id;
+    protected String namaDonatur;
+    protected String penerima;
 
-// Constructor 2 (Overloading) → default penerima
-public DonasiUang(int id, String namaDonatur, double jumlahUang) {
-    super(id, namaDonatur, "Yayasan");
-    this.jumlahUang = jumlahUang;
+    public Donasi(int id, String namaDonatur, String penerima) {
+        this.id = id;
+        this.namaDonatur = namaDonatur;
+        this.penerima = penerima;
+    }
+
+    public String getDetail() {
+        return "ID: " + id + " | Donatur: " + namaDonatur + " | Penerima: " + penerima;
+    }
+
+    public String getDetail(boolean lengkap) {
+        if (lengkap) {
+            return getDetail() + " | Jenis Donasi: " + this.getClass().getSimpleName();
+        } else {
+            return getDetail();
+        }
+    }
+
+    public abstract void cetakDetail();
 }
 ```
-Pada class DonasiUang ditambahkan dua constructor dengan parameter berbeda (Overloading).
-   - Constructor pertama digunakan bila user ingin menentukan penerima secara manual.
-   - Constructor kedua otomatis mengisi penerima dengan "Yayasan" jika tidak ditentukan.
-Inilah contoh Polymorphism melalui Overloading.
+ - Abstract class Donasi dibuat abstract supaya tidak bisa diinstansiasi langsung. Ini mendukung abstraction.
+ - Ditambahkan method getDetail(boolean lengkap) sebagai overloading (polymorphism) dari getDetail(). Versi pertama hanya menampilkan data dasar, sedangkan versi kedua menampilkan tambahan informasi berupa jenis donasi.
+ - Ditambahkan abstract method cetakDetail() yang nantinya diimplementasikan berbeda oleh subclass.
 
-#### 4. Overloading Construction di Donasi Barang
+### 3. Class DonasiUang.java (implementasi overriding dan interface)
 ```bash
-// Constructor 1 (lengkap)
-public DonasiBarang(int id, String namaDonatur, String penerima, String jenisBarang) {
-    super(id, namaDonatur, penerima);
-    this.jenisBarang = jenisBarang;
-}
+public class DonasiUang extends Donasi {
+    private double jumlahUang;
 
-// Constructor 2 (Overloading) → default penerima
-public DonasiBarang(int id, String namaDonatur, String jenisBarang) {
-    super(id, namaDonatur, "Panti Asuhan");
-    this.jenisBarang = jenisBarang;
+    public DonasiUang(int id, String namaDonatur, String penerima, double jumlahUang) {
+        super(id, namaDonatur, penerima);
+        this.jumlahUang = jumlahUang;
+    }
+
+    @Override
+    public String getDetail() {
+        return super.getDetail() + " | Jumlah Uang: Rp" + jumlahUang;
+    }
+
+    @Override
+    public void cetakDetail() {
+        System.out.println("==== Donasi Uang ====");
+        System.out.println("ID: " + id);
+        System.out.println("Donatur: " + namaDonatur);
+        System.out.println("Penerima: " + penerima);
+        System.out.println("Jumlah: Rp" + jumlahUang);
+    }
 }
 ```
+ - Overriding pada getDetail() → method ini menimpa versi dari Donasi supaya detail khusus donasi uang ikut ditampilkan.
+ - Implementasi cetakDetail() dari interface CetakInfo, khusus menampilkan format detail donasi uang.
 
-#### 5. Overriding getDetail() dan implementasi interface
+### 4. Class DonasiBarang.java (implementasi overriding dan interface)
 ```bash
-@Override
-public String getDetail() {
-    return id + ". " + namaDonatur + " → " + penerima + " | Barang: " + jenisBarang;
-}
+public class DonasiBarang extends Donasi {
+    private String namaBarang;
 
-@Override
-public void cetakRingkas() {
-    System.out.println("Donasi barang dari " + namaDonatur + " berupa " + jenisBarang);
+    public DonasiBarang(int id, String namaDonatur, String penerima, String namaBarang) {
+        super(id, namaDonatur, penerima);
+        this.namaBarang = namaBarang;
+    }
+
+    @Override
+    public String getDetail() {
+        return super.getDetail() + " | Barang: " + namaBarang;
+    }
+
+    @Override
+    public void cetakDetail() {
+        System.out.println("==== Donasi Barang ====");
+        System.out.println("ID: " + id);
+        System.out.println("Donatur: " + namaDonatur);
+        System.out.println("Penerima: " + penerima);
+        System.out.println("Barang: " + namaBarang);
+    }
 }
 ```
-  - getDetail() merupakan implementasi dari method abstrak pada Donasi.
-Setiap subclass punya format detail yang berbeda, ini contoh Polymorphism via Overriding.
-  - cetakRingkas() adalah implementasi dari interface CetakInfo.
-Method ini dipakai untuk menampilkan informasi singkat tentang donasi.
+ - Overriding pada getDetail() agar bisa menampilkan informasi tambahan berupa nama barang.
+ - Implementasi cetakDetail() dari interface CetakInfo, untuk menampilkan detail donasi barang dengan format berbeda.
