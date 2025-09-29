@@ -3,7 +3,6 @@ package model;
 public class DonasiBarang extends Donasi implements CetakInfo {
     private String jenisBarang;
 
-    // Constructor Overloading
     public DonasiBarang(int id, String namaDonatur, String penerima, String jenisBarang) {
         super(id, namaDonatur, penerima);
         this.jenisBarang = jenisBarang;
@@ -24,3 +23,4 @@ public class DonasiBarang extends Donasi implements CetakInfo {
         System.out.println("Donasi barang dari " + namaDonatur + " berupa " + jenisBarang);
     }
 }
+
