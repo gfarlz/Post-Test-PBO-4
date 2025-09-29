@@ -51,9 +51,9 @@ public class DonasiService {
         } else {
             System.out.println("Daftar Donasi:");
             for (Donasi d : listDonasi) {
-                System.out.println(d.getDetail()); // Overriding
+                System.out.println(d.getDetail()); 
                 if (d instanceof CetakInfo) {
-                    ((CetakInfo) d).cetakRingkas(); // Polymorphism via interface
+                    ((CetakInfo) d).cetakRingkas(); 
                 }
             }
         }
@@ -121,3 +121,4 @@ public class DonasiService {
         return null;
     }
 }
+
