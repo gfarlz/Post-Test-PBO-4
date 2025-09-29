@@ -11,10 +11,8 @@ public abstract class Donasi {
         this.penerima = penerima;
     }
 
-    // Abstract Method → harus dioverride di subclass
     public abstract String getDetail();
 
-    // Getter & Setter
     public int getId() { return id; }
     public void setId(int id) { this.id = id; }
 
@@ -24,3 +22,4 @@ public abstract class Donasi {
     public String getPenerima() { return penerima; }
     public void setPenerima(String penerima) { this.penerima = penerima; }
 }
+
